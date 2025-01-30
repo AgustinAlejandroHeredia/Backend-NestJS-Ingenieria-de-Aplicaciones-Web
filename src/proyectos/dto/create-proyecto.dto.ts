@@ -14,6 +14,5 @@ export class CreateProyectoDto {
     direccion_tecnica?:string;
     estado?:string;
     usuarios?:string[]
-
-    // por ahora no se añaden los plano aca
+    
 }

@@ -1,6 +1,7 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Plano } from "./Plano.schema";
 import mongoose from "mongoose";
+import { Organizacion } from "./Organizacion.schema";
 
 @Schema()
 export class Proyecto {
@@ -48,6 +49,10 @@ export class Proyecto {
     // usuarios que participan en este proyecto
     @Prop({required:false})
     usuarios: string[]
+
+    // id de la organizacion a la que pertenece
+    @Prop({required:false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organizacion' }]})
+    id_organizacion: Organizacion
 
 }
 

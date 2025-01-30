@@ -1,13 +1,70 @@
+import { IsString, IsNumber, IsNotEmpty, IsDate} from "class-validator";
+import { buffer } from "stream/consumers";
+
 export class CreatePlanoDto {
 
-    subido_por:string;
+/* Originalmente para almacenar el archivo en mongo
 
-    nombre:string
-    especialidad?:string
+    @IsString()
+    @IsNotEmpty()
+    filename:string;
 
-    // para la relacion one-to-many
-    proyectoid: string
+    @IsString()
+    @IsNotEmpty()
+    encoding: string
 
-    // archivo
+    @IsString()
+    @IsNotEmpty()
+    mimetype: string
+
+    @IsNotEmpty()
+    buffer: Buffer
+
+    @IsNumber()
+    @IsNotEmpty()
+    size: number
+
+    @IsString()
+    @IsNotEmpty()
+    tipo: string
+
+    @IsString()
+    @IsNotEmpty()
+    subido_por: string
+
+    @IsNumber()
+    @IsNotEmpty()
+    fecha_creacion: number
+
+*/
+
+// para backblaze
+
+    @IsString()
+    _id?: string
+
+    @IsString()
+    @IsNotEmpty()
+    filename: string
+
+    @IsString()
+    @IsNotEmpty()
+    subido_por: string
+
+    @IsNumber()
+    @IsNotEmpty()
+    fecha_creacion: number
+
+    @IsNumber()
+    @IsNotEmpty()
+    size: number
+
+    @IsString()
+    @IsNotEmpty()
+    type: string
+
+    @IsString()
+    @IsNotEmpty()
+    id_plano_backblaze: string
 
 }

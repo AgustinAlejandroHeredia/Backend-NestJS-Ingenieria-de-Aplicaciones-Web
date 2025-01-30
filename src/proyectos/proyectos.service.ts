@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 // DTOs
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
@@ -11,12 +11,23 @@ import { Model } from 'mongoose';
 import { Proyecto } from 'src/schemas/Proyecto.schema';
 import { InjectModel } from '@nestjs/mongoose';
 
+// BACKBLAZE
+import BackBlazeB2 from 'backblaze-b2';
+const B2 = require('backblaze-b2')
 
 @Injectable()
 export class ProyectosService {
 
+  private b2: BackBlazeB2
+  private readonly logger = new Logger()
+
   // parte de conectar con DB
-  constructor(@InjectModel(Proyecto.name) private proyectoModel: Model<Proyecto>){}
+  constructor(@InjectModel(Proyecto.name) private proyectoModel: Model<Proyecto>){
+    this.b2 = new B2({
+      applicationKeyId: '0052d9ef99435720000000003',
+      applicationKey: 'K005/7rr7ZSKuuPiaKPQcdv8azucI3M'
+  })
+  }
 
 
   createProyecto(createProyectoDto: CreateProyectoDto) {
