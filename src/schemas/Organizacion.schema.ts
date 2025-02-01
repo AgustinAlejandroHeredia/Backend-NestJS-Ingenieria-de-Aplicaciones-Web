@@ -14,10 +14,10 @@ export class Organizacion {
     @Prop({required:false})
     contactos: string
 
-    @Prop({required:false})
-    usuarios?: string[]
+    @Prop({required:false, type: [{ id: String, nombre: String}]})
+    usuarios: { id: String, nombre: String}
 
-    @Prop({ required:false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Forma' }] })
+    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: 'Forma' })
     forma: Forma
 }
 

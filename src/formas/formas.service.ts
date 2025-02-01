@@ -13,7 +13,7 @@ export class FormasService {
 
     async createForma(createFormaDto: CreateFormaDto){
         const nuevaForma = new this.formaModel(createFormaDto)
-        return nuevaForma.save()
+        return await nuevaForma.save()
     }
 
     async getFormaById(formaId: string){

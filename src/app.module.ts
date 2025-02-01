@@ -8,7 +8,6 @@ import { PlanosModule } from './planos/planos.module';
 import { MongooseModule } from '@nestjs/mongoose'
 
 // CON AUTH0
-//import { AuthorizationModule } from './authorization/authorization.module';
 import { ArchivosModule } from './archivos/archivos.module';
 import { RecortesModule } from './recortes/recortes.module';
 import { UsersService } from './users/users.service';
@@ -54,10 +53,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     HttpModule, 
     OrganizacionesModule, 
     FormasModule, 
-    OrganizacionAccessTokenModule
+    OrganizacionAccessTokenModule,
   ],
-  controllers: [AppController, UsersController],
-  providers: [AppService, UsersService],
+  controllers: [AppController, UsersController, OrganizacionesController],
+  providers: [AppService, UsersService, OrganizacionesService],
 })
 export class AppModule {}
 

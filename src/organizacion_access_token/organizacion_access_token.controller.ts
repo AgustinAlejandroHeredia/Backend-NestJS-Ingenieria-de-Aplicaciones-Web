@@ -1,12 +1,13 @@
 import { BadRequestException, Body, Controller, Delete, Get, Header, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { OrganizacionAccessTokenService } from './organizacion_access_token.service';
 import { CreateOrganizacionAccessTokenDto } from './dto/create-organizacion_access_token.controller.dto';
-import mongoose from 'mongoose';
+import { OrganizacionesService } from 'src/organizaciones/organizaciones.service';
+import { Types } from 'mongoose';
 
 @Controller('organizacion-access-token')
 export class OrganizacionAccessTokenController {
 
-    constructor(private organizacionAccessTokenService: OrganizacionAccessTokenService){}
+    constructor(private organizacionAccessTokenService: OrganizacionAccessTokenService, private organizacionesService: OrganizacionesService){}
 
     @Post()
     async generarAccessToken(@Body() data: {email_dest: string, id_organizacion: string, duracion: number}){
@@ -21,7 +22,7 @@ export class OrganizacionAccessTokenController {
     @Delete(':id')
     async deleteAccessToken(@Param('id') id: string){
 
-        const valido = mongoose.Types.ObjectId.isValid(id)
+        const valido = Types.ObjectId.isValid(id)
         if(!valido){
             throw new HttpException('id no valido', 404)
         }
@@ -35,25 +36,56 @@ export class OrganizacionAccessTokenController {
         return deletedToken
     }
 
-    @Get('validar/:codigo')
-    async validarToken(@Param('codigo') codigo: string){
+    @Get('validar/:codigo/:userId/:userNombre')
+    async validarToken(@Param('codigo') codigo: string, @Param('userId') userId: string, @Param('userNombre') userNombre: string){
+        console.log('Llega aca')
         const act = Date.now()
-        let valido = false
         try{
-            const token = this.organizacionAccessTokenService.getAccessTokenByCodigo(codigo)
+            const token = await this.organizacionAccessTokenService.getAccessTokenByCodigo(codigo)
 
-            // valida que el usuario no este ya en esa organizacion, si lo esta, elimina el token
+            if(!token){
+                throw new Error('No existe un token con ese codigo')
+            }
 
+            console.log('Existe token -> (', token, ')')
+
+            // vencido?
             const duracionTokenMs = (await token).duracion * 60 * 60 * 1000
             const expiracionToken = (await token).creacion + duracionTokenMs
+            let expirado: boolean
             if(expiracionToken > act){
                 // valido
+                expirado = false
+                console.log('No esta expirado')
+            }else{
+                expirado = true
+                console.log('Esta expirado')
+            }
+
+            let pertenece: boolean
+            if(await this.organizacionesService.userPerteneceAOrganizacion(userId, token.organizacion_id)){
+                // si el usuario pertenece a la organizacion ya, el token es invalido porque no sirve
+                pertenece = true
+                console.log('El usuario ya pertenece a esta organizacion')
+            }else{
+                console.log('El usuario no pertenece a la organizacion')
+                pertenece = false
+            }
+
+            let valido: boolean
+            if(!expirado && !pertenece){
                 valido = true
+
+                // agrega el usuario a la organizacion
+                this.organizacionesService.cargarUser(userId, userNombre, token.organizacion_id)
+                console.log('Usuario añadido a la organizacion con id ',token.organizacion_id)
+
             }else{
                 valido = false
             }
+
             console.log('Se elimina el token ', (await token)._id,', se confima como ', valido, ' con expiracion ', expiracionToken, ', siendo el momento actual ', act)
-            this.organizacionAccessTokenService.deleteAccessToken((await token)._id)
+            this.organizacionAccessTokenService.deleteAccessToken(String((await token)._id))
             return valido
         } catch (e) {
             console.log('Error al validar el token')

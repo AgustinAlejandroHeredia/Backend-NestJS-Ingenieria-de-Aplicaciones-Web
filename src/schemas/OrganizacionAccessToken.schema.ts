@@ -5,8 +5,11 @@ import mongoose from "mongoose";
 @Schema()
 export class OrganizacionAccessToken {
 
-    @Prop({ required:false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organizacion' }] })
-    organizacion_id: Organizacion
+    //@Prop({ required:false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organizacion' }] })
+    //organizacion_id: Organizacion
+
+    @Prop({required:false})
+    organizacion_id: string
 
     @Prop({required:false})
     creacion: number

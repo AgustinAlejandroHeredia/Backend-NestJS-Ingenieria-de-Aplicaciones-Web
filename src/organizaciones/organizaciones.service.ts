@@ -3,24 +3,32 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Organizacion } from 'src/schemas/Organizacion.schema';
 import { CreateOrganizacionDto } from './dto/create-organizacion.dto';
+import { FormasService } from 'src/formas/formas.service';
 
 @Injectable()
 export class OrganizacionesService {
 
-    constructor(@InjectModel(Organizacion.name) private organizacionModel: Model<Organizacion>){}
-    // constructor(@InjectModel(Proyecto.name) private proyectoModel: Model<Proyecto>){
+    constructor(private formasService:FormasService, @InjectModel(Organizacion.name) private organizacionModel: Model<Organizacion>){}
 
     async createOrganizacion(createOrganizacionDto: CreateOrganizacionDto){
         const nuevaOrganizacion = new this.organizacionModel(createOrganizacionDto);
         return nuevaOrganizacion.save()
     }
 
+    async getOrganizacionById(organizacionId: string){
+        return this.organizacionModel.findById(organizacionId)
+    }
+
     async getOrganizacionesByUserId(userId: string){
-        return this.organizacionModel.findOne({'usuarios': userId}).exec()
+        return this.organizacionModel.findOne({
+            usuarios: { $elemMatch: { id: userId } },
+        }).exec()
     }
 
     async getOrganizacionesViewByUserId(userId: string){
-        const organizaciones = await this.organizacionModel.find({'usuarios': userId})
+        const organizaciones = await this.organizacionModel.find({
+            usuarios: { $elemMatch: { id: userId } }
+        }).exec();
         return organizaciones.map(org => ({
             _id: org._id,
             nombre: org.nombre,
@@ -30,12 +38,30 @@ export class OrganizacionesService {
         }))
     }
 
-    async cargarUser(userId: string, organizacionId: string){
+    async cargarUser(userId: string, nombreUsuario: string, organizacionId: string) {
+        const usuario = { id: userId, nombre: nombreUsuario };
+    
         return this.organizacionModel.findByIdAndUpdate(
             organizacionId,
-            { $push: { usuarios: userId} },
-            { new: true}
-        )
+            { $push: { usuarios: usuario } },
+            { new: true }
+        ).exec();
+    }
+
+    async userPerteneceAOrganizacion(userId: string, organizacionId: string): Promise<boolean> {
+        const organizacion = await this.organizacionModel.findOne({
+            usuarios: { $elemMatch: { id: userId } },
+            _id: organizacionId,
+        }).exec();
+
+        console.log('RESULTADO DE BUSQUEDA -> ', organizacion)
+
+        return organizacion ? true : false;
+    }
+
+    async nombreByIdOrganizacion(idOrganizacion: string): Promise<string>{
+        const organizacion = await this.organizacionModel.findById(idOrganizacion).exec()
+        return organizacion ? organizacion.nombre : null
     }
 
 }

@@ -1,5 +1,8 @@
-import { IsString, IsNumber, IsNotEmpty, IsDate} from "class-validator";
+import { IsString, IsNumber, IsNotEmpty, IsDate, IsMongoId} from "class-validator";
 import { Forma } from "src/schemas/Forma.schema";
+import { UsuarioDto } from "./usuario.dto";
+import { CreateFormaDto } from "src/formas/dto/create-forma.dto";
+import { Types } from "mongoose";
 
 export class CreateOrganizacionDto {
 
@@ -17,8 +20,10 @@ export class CreateOrganizacionDto {
     @IsNotEmpty()
     contactos: string
 
-    @IsString()
     @IsNotEmpty()
-    forma: string
+    usuarios?:UsuarioDto[];
+
+    @IsMongoId()
+    forma: Types.ObjectId
 
 }

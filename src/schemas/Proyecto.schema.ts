@@ -33,8 +33,11 @@ export class Proyecto {
     @Prop({required:false})
     antecedentes?:string;
 
-    //propietario:string;
-    //proyectistas:string;
+    @Prop({required:false})
+    propietario:string;
+
+    @Prop({required:false})
+    proyectistas:string;
 
     @Prop({required:false})
     direccion_tecnica?:string;
@@ -47,11 +50,11 @@ export class Proyecto {
     planos: Plano[]
 
     // usuarios que participan en este proyecto
-    @Prop({required:false})
-    usuarios: string[]
+    @Prop({required:false, type: [{ id: String, nombre: String}]})
+    usuarios: { id: String, nombre: String}
 
     // id de la organizacion a la que pertenece
-    @Prop({required:false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organizacion' }]})
+    @Prop({ required:false, type: mongoose.Schema.Types.ObjectId, ref: 'Organizacion' })
     id_organizacion: Organizacion
 
 }

@@ -30,9 +30,9 @@ export class ProyectosService {
   }
 
 
-  createProyecto(createProyectoDto: CreateProyectoDto) {
+  async createProyecto(createProyectoDto: CreateProyectoDto) {
     const nuevoProyecto = new this.proyectoModel(createProyectoDto);
-    return nuevoProyecto.save()
+    return await nuevoProyecto.save()
   }
 
   getProyectos() {
@@ -47,12 +47,25 @@ export class ProyectosService {
     return this.proyectoModel.findByIdAndUpdate(id, updateProyectoDto)
   }
 
+  async cargarUser(userId: string, nombreUsuario: string, proyectoId: string) {
+    const usuario = { id: userId, nombre: nombreUsuario };
+
+    return this.proyectoModel.findByIdAndUpdate(
+        proyectoId,
+        { $push: { usuarios: usuario } },
+        { new: true }
+    ).exec();
+  }
+
   deleteProyecto(id: string) {
     return this.proyectoModel.findByIdAndDelete(id)
   }
 
-  getProyectosByUserId(userId: string) {
-    return this.proyectoModel.find({usuarios: userId})
+  getProyectosByUserIdAndOrganizacionId(userId: string, organizacionId: string): Promise<Proyecto[]> {
+    return this.proyectoModel.find({
+      'usuarios.id': userId,
+      'id_organizacion': organizacionId,
+    }).exec();
   }
 
   getPlanosByProjectID(idProyecto: string) {
@@ -61,5 +74,15 @@ export class ProyectosService {
       .populate('planos')
       .select('planos')
       .exec();
+  }
+
+  async eliminarUsuarioDelProyecto(proyectoId: string, userId: string): Promise<boolean> {
+    const proyecto = await this.proyectoModel.findByIdAndUpdate(
+      proyectoId,
+      { $pull: { usuarios: { id: userId } } },
+      { new: true }
+    ).exec();
+
+    return proyecto ? true : false;
   }
 }

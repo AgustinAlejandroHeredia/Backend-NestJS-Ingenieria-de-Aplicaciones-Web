@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, lastValueFrom, Observable } from 'rxjs';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +26,45 @@ export class UsersService {
         });
 
         return response.data;
+    }
+
+    async getUserData(accessToken: string, userId: string) {
+      const url = `https://inge.com/api/orders/users/${userId}`;
+      const headers = { Authorization: `Bearer ${accessToken}` };
+
+      try {
+
+        const response = await firstValueFrom(this.http.get(url, { headers }) );
+        console.log('SALE BIEN')
+        return response; // para asegurar el json aca tambien
+
+      } catch (error) {
+        
+        console.error('Error fetching user data:', error)
+
+        if(error.response){
+          console.error('Error fetching user data:', error.response);
+          throw new Error (JSON.stringify(error.response.data)) // aseguro el json
+        }
+      }
+    }
+
+    async getUserDataFromAuth0(userId: string, accessToken: string) {
+      try {
+        const response = await axios.get(
+          `https://dev-s2w5lzkgxmbf0wl0.us.auth0.com/api/v2//users/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+  
+        return response.data; // Devuelve los datos del usuario
+      } catch (error) {
+        console.error('Error al obtener los datos de Auth0:', error.response);
+        throw error;
+      }
     }
 
 }

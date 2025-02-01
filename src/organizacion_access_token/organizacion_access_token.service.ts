@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { OrganizacionAccessToken } from 'src/schemas/OrganizacionAccessToken.schema';
 import { CreateOrganizacionAccessTokenDto } from './dto/create-organizacion_access_token.controller.dto';
 
@@ -42,15 +42,19 @@ export class OrganizacionAccessTokenService {
         }
     }
 
-    private generarCodigoAleatorio(): string {
+    private generarCodigoAleatorio_1(): string {
         const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         const segmento = () => Array.from({ length: 4 }, () => caracteres[Math.floor(Math.random() * caracteres.length)]).join('');
       
         return `${segmento()} - ${segmento()} - ${segmento()} - ${segmento()}`;
     }
 
+    private generarCodigoAleatorio_2(): string {
+        return String(Math.floor(100000 + Math.random() * 900000))
+    }
+
     async generarAccessToken(email_dest: string, id_organizacion: string, duracion: number){
-        const codigo = this.generarCodigoAleatorio()
+        const codigo = this.generarCodigoAleatorio_2()
         const createOrganizacionAccessTokenDto : CreateOrganizacionAccessTokenDto = {
             organizacion_id: id_organizacion,
             creacion: Date.now(),
@@ -68,10 +72,14 @@ export class OrganizacionAccessTokenService {
     }
 
     async deleteAccessToken(tokenId: string){
-        return this.organizacionAccessTokenModel.findByIdAndDelete(tokenId)
+        if (!mongoose.Types.ObjectId.isValid(tokenId)) {
+            throw new Error('ID inválido');
+        }
+        const objectId = new mongoose.Types.ObjectId(tokenId);
+        return this.organizacionAccessTokenModel.findByIdAndDelete(objectId)
     }
 
-    async getAccessTokenByCodigo(codigo: string): Promise<any>{
+    async getAccessTokenByCodigo(codigo: string){
         return this.organizacionAccessTokenModel.findOne({'codigo': codigo}).exec()
     }
 }

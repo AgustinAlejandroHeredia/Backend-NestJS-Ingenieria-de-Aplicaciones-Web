@@ -1,3 +1,5 @@
+import { UsuarioDto } from "./usuario.dto";
+
 export class CreateProyectoDto {
     
     nombre:string;
@@ -9,10 +11,10 @@ export class CreateProyectoDto {
     otros?:string;
     referencias?:string;
     antecedentes?:string;
-    //propietario:string;
-    //proyectistas:string;
+    propietario:string;
+    proyectistas:string;
     direccion_tecnica?:string;
     estado?:string;
-    usuarios?:string[]
-    
+    usuarios?:UsuarioDto[];
+    id_organizacion: string
 }
