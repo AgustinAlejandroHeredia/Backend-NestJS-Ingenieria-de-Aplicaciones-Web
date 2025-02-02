@@ -119,4 +119,9 @@ export class ProyectosController {
       throw new HttpException('No se pudo eliminar el usuario', HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Delete(':idOrganizacion/:idUser')
+  async eliminarUsuarioDeProyectos(@Param('idOrganizacion') idOrganizacion: string, @Param('idUser') idUser: string){
+    return this.proyectosService.eliminarUsuarioDeProyectos(idOrganizacion, idUser)
+  }
 }

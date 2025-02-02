@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 // SCHEMAS
 import { OrganizacionSchema, Organizacion } from 'src/schemas/Organizacion.schema';
+import { ProyectosModule } from 'src/proyectos/proyectos.module';
 
 @Module({
     imports: [ 
@@ -16,6 +17,7 @@ import { OrganizacionSchema, Organizacion } from 'src/schemas/Organizacion.schem
         schema: OrganizacionSchema,
     }]),
         FormasModule,
+        ProyectosModule,
     ],
     
     providers: [OrganizacionesService],

@@ -15,7 +15,7 @@ export class Organizacion {
     contactos: string
 
     @Prop({required:false, type: [{ id: String, nombre: String}]})
-    usuarios: { id: String, nombre: String}
+    usuarios: { id: String, nombre: String }
 
     @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: 'Forma' })
     forma: Forma

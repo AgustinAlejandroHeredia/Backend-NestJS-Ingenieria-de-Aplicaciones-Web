@@ -53,6 +53,27 @@ export class OrganizacionAccessTokenService {
         return String(Math.floor(100000 + Math.random() * 900000))
     }
 
+    /*
+
+    desde el normal
+    TOKEN RESULTANTE ->  {
+        creacion: 1738470752302,
+        duracion: 1,
+        codigo: '104167',
+        _id: new ObjectId("679ef56075874abff8134b9a")
+    }
+
+    desde el test
+    TOKEN RESULTANTE ->  {
+        organizacion_id: '679a46391ebb93698b9caee8',
+        creacion: 1738470786937,
+        duracion: 2,
+        codigo: '333228',
+        _id: new ObjectId("679ef58275874abff8134b9c")
+    }
+
+    */
+
     async generarAccessToken(email_dest: string, id_organizacion: string, duracion: number){
         const codigo = this.generarCodigoAleatorio_2()
         const createOrganizacionAccessTokenDto : CreateOrganizacionAccessTokenDto = {
@@ -63,7 +84,7 @@ export class OrganizacionAccessTokenService {
         }
         const nuevoToken = new this.organizacionAccessTokenModel(createOrganizacionAccessTokenDto)
 
-        const text = ('Su token de acceso es ' + String(codigo) + ', puede usarlo luego de iniciar sesion presionando en "Ingresar token".')
+        const text = ('Su token de acceso es ' + String(codigo) + ', puede usarlo luego de iniciar sesion presionando en "Ingresar token". Este token es valido hasta ' + String(duracion) + 'h desde la entrega de este email.')
         const subject = 'Invitacion'
 
         this.enviarEmail(email_dest, subject, text)

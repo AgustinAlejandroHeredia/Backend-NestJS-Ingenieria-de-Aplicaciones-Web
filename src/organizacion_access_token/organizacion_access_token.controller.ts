@@ -10,8 +10,8 @@ export class OrganizacionAccessTokenController {
     constructor(private organizacionAccessTokenService: OrganizacionAccessTokenService, private organizacionesService: OrganizacionesService){}
 
     @Post()
-    async generarAccessToken(@Body() data: {email_dest: string, id_organizacion: string, duracion: number}){
-        return this.organizacionAccessTokenService.generarAccessToken(data.email_dest, data.id_organizacion, data.duracion)
+    async generarAccessToken(@Body() data: {email_dest: string, idOrganizacion: string, duracion: number}){
+        return this.organizacionAccessTokenService.generarAccessToken(data.email_dest, data.idOrganizacion, data.duracion)
     }
 
     @Post('test/:email_dest/:id_organizacion/:duracion')

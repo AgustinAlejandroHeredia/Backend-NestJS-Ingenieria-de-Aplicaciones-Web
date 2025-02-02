@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Organizacion } from 'src/schemas/Organizacion.schema';
 import { CreateOrganizacionDto } from './dto/create-organizacion.dto';
 import { FormasService } from 'src/formas/formas.service';
+
+//import { ProyectosService } from 'src/proyectos/proyectos.service';
+import { NotFoundError } from 'rxjs';
+//import { Proyecto } from 'src/schemas/Proyecto.schema';
 
 @Injectable()
 export class OrganizacionesService {
@@ -62,6 +66,14 @@ export class OrganizacionesService {
     async nombreByIdOrganizacion(idOrganizacion: string): Promise<string>{
         const organizacion = await this.organizacionModel.findById(idOrganizacion).exec()
         return organizacion ? organizacion.nombre : null
+    }
+
+    async eliminarUsuario(idOrganizacion: string, idUsuario: string){
+        return this.organizacionModel.findOneAndUpdate(
+            { _id: idOrganizacion },
+            { $pull: { usuarios: { id: idUsuario } } }, // Elimina el usuario de la lista de la organización
+            { new: true }
+        ).exec();
     }
 
 }

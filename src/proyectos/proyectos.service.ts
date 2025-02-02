@@ -49,12 +49,15 @@ export class ProyectosService {
 
   async cargarUser(userId: string, nombreUsuario: string, proyectoId: string) {
     const usuario = { id: userId, nombre: nombreUsuario };
+    console.log('ESTE ES EL USUARIO QUE SE CARGA -> ', usuario)
 
-    return this.proyectoModel.findByIdAndUpdate(
+    const usuario_cargado = this.proyectoModel.findByIdAndUpdate(
         proyectoId,
         { $push: { usuarios: usuario } },
         { new: true }
     ).exec();
+    console.log('ESTO DEVUELVE MONGO -> ', usuario_cargado)
+    return usuario_cargado
   }
 
   deleteProyecto(id: string) {
@@ -84,5 +87,18 @@ export class ProyectosService {
     ).exec();
 
     return proyecto ? true : false;
+  }
+
+  // elimina al usaurio de todos los proyectos de la organizacion
+  async eliminarUsuarioDeProyectos(idOrganizacion: string, idUsuario: string) {
+    return this.proyectoModel.updateMany(
+      {
+        id_organizacion: idOrganizacion,
+        'usuarios.id': idUsuario, // Busca el usuario por su 'id'
+      },
+      {
+        $pull: { usuarios: { id: idUsuario } }, // Elimina el usuario de la lista
+      }
+    ).exec();
   }
 }

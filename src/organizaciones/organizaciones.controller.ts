@@ -61,4 +61,9 @@ export class OrganizacionesController {
         return { nombre }
     }
 
+    @Delete(':idOrganizacion/:idUsuario')
+    async eliminarUsuario(@Param('idOrganizacion') idOrganizacion: string, @Param('idUsuario') idUsuario: string){
+        return this.organizacionesService.eliminarUsuario(idOrganizacion, idUsuario)
+    }
+
 }
